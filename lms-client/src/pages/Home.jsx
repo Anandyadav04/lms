@@ -1,127 +1,149 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { Link } from 'react-router-dom';
 import { useCourses } from '../context/CoursesContext';
 import CourseCard from '../components/CourseCard';
-import { Link } from 'react-router-dom';
+import '../styles/Home.css';
 
 export default function Home() {
   const { courses } = useCourses();
-  const [search, setSearch] = useState('');
-
-  const filteredCourses = courses
-    .filter(c => c.title.toLowerCase().includes(search.toLowerCase()))
-    .slice(0, 6);
+  const featuredCourses = courses.slice(0, 3); // Show first 3 courses as featured
 
   return (
-    <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '20px' }}>
-
+    <div className="home-page">
       {/* Hero Section */}
-      <section style={{
-        background: 'linear-gradient(135deg, #4e54c8, #8f94fb)',
-        color: '#fff',
-        padding: '50px 30px',
-        borderRadius: '12px',
-        marginBottom: '30px',
-        textAlign: 'center'
-      }}>
-        <h1 style={{ fontSize: '2.5rem', marginBottom: '10px' }}>Welcome to the LMS</h1>
-        <p style={{ fontSize: '1.2rem', marginBottom: '20px' }}>
-          Learn new skills, explore courses, and track your progress — all in one place.
-        </p>
-        <Link to="/courses" style={{
-          background: '#fff',
-          color: '#4e54c8',
-          padding: '10px 20px',
-          borderRadius: '6px',
-          fontWeight: 'bold',
-          textDecoration: 'none',
-          transition: 'background 0.3s ease'
-        }}
-          onMouseOver={e => e.target.style.background = '#f4f4f4'}
-          onMouseOut={e => e.target.style.background = '#fff'}
-        >
-          Browse All Courses
-        </Link>
-      </section>
-
-      {/* Search Bar */}
-      <section style={{ marginBottom: '20px', display: 'flex', justifyContent: 'center' }}>
-        <input
-          type="text"
-          placeholder="Search courses..."
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          style={{
-            width: '100%',
-            maxWidth: '500px',
-            padding: '12px 16px',
-            borderRadius: '8px',
-            border: '1px solid #ccc',
-            fontSize: '1rem'
-          }}
-        />
-      </section>
-
-      {/* Featured Course */}
-      {courses.length > 0 && (
-        <section style={{
-          marginBottom: '30px',
-          padding: '20px',
-          background: '#f9f9f9',
-          borderRadius: '10px',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
-        }}>
-          <h2 style={{ marginBottom: '15px' }}>Featured Course</h2>
-          <div style={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            alignItems: 'center',
-            gap: '20px'
-          }}>
-            <div style={{ flex: '1 1 300px' }}>
-              <CourseCard course={courses[0]} />
-            </div>
-            <div style={{ flex: '2 1 400px' }}>
-              <h3 style={{ margin: '0 0 10px 0' }}>{courses[0].title}</h3>
-              <p style={{ marginBottom: '15px' }}>{courses[0].description}</p>
-              <Link to={`/courses/${courses[0].id}`} className="btn">
-                View Course
-              </Link>
+      <section className="hero-section">
+        <div className="hero-content">
+          <div className="hero-text">
+            <h1>Expand Your Knowledge, Master New Skills</h1>
+            <p>Discover expert-led courses across various domains and advance your career with our comprehensive learning platform.</p>
+            <div className="hero-actions">
+              <Link to="/courses" className="btn btn-primary">Browse Courses</Link>
+              <Link to="/Register" className="btn btn-secondary">Get Started</Link>
             </div>
           </div>
-        </section>
-      )}
-
-      {/* Popular Courses */}
-      <section>
-        <h2 style={{
-          fontSize: '1.8rem',
-          marginBottom: '20px',
-          borderBottom: '2px solid #eee',
-          paddingBottom: '8px'
-        }}>Popular Courses</h2>
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-          gap: '20px'
-        }}>
-          {filteredCourses.map(c => (
-            <div key={c.id} style={{
-              background: '#fff',
-              borderRadius: '8px',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-              overflow: 'hidden',
-              transition: 'transform 0.2s ease-in-out',
-              cursor: 'pointer'
-            }}
-              onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.02)'}
-              onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
-            >
-              <CourseCard course={c} />
+          <div className="hero-image">
+            <div className="floating-card card-1">
+              <span>📚</span>
+              <p>100+ Courses</p>
             </div>
-          ))}
+            <div className="floating-card card-2">
+              <span>👨‍🏫</span>
+              <p>Expert Instructors</p>
+            </div>
+            <div className="floating-card card-3">
+              <span>🎯</span>
+              <p>Practical Learning</p>
+            </div>
+            {/* <div className="main-hero-image">
+              <img src="/images/react1.jpg" alt="Online Learning" />
+            </div> */}
+          </div>
         </div>
       </section>
 
+      {/* Benefits Section */}
+      <section className="benefits-section">
+        <div className="container">
+          <h2>Why Learn With Us?</h2>
+          <div className="benefits-grid">
+            <div className="benefit-card">
+              <div className="benefit-icon">📖</div>
+              <h3>Comprehensive Curriculum</h3>
+              <p>Our courses are designed by industry experts to provide you with the most relevant and up-to-date knowledge.</p>
+            </div>
+            <div className="benefit-card">
+              <div className="benefit-icon">⏱️</div>
+              <h3>Learn at Your Pace</h3>
+              <p>Access course materials anytime, anywhere, and progress through lessons according to your schedule.</p>
+            </div>
+            <div className="benefit-card">
+              <div className="benefit-icon">🎓</div>
+              <h3>Earn Certificates</h3>
+              <p>Receive recognized certificates upon completion to showcase your skills to employers.</p>
+            </div>
+            <div className="benefit-card">
+              <div className="benefit-icon">💬</div>
+              <h3>Community Support</h3>
+              <p>Join a community of learners and get support from instructors and peers throughout your journey.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Featured Courses Section */}
+      <section className="featured-courses">
+        <div className="container">
+          <div className="section-header">
+            <h2>Featured Courses</h2>
+            <p>Discover our most popular learning paths</p>
+            <Link to="/courses" className="view-all">View All Courses →</Link>
+          </div>
+          <div className="courses-grid">
+            {featuredCourses.map(course => (
+              <CourseCard key={course.id} course={course} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials Section */}
+      <section className="testimonials">
+        <div className="container">
+          <h2>What Our Students Say</h2>
+          <div className="testimonials-grid">
+            <div className="testimonial-card">
+              <div className="testimonial-content">
+                <p>"The courses are well-structured and the instructors are knowledgeable. I've significantly improved my skills!"</p>
+              </div>
+              <div className="testimonial-author">
+                <div className="author-avatar">JD</div>
+                <div className="author-info">
+                  <h4>Vijay Chatterjee</h4>
+                  <p>Software Developer</p>
+                </div>
+              </div>
+            </div>
+            <div className="testimonial-card">
+              <div className="testimonial-content">
+                <p>"The platform is intuitive and the community support is amazing. I've completed 5 courses already!"</p>
+              </div>
+              <div className="testimonial-author">
+                <div className="author-avatar">AS</div>
+                <div className="author-info">
+                  <h4>Priya Reddy</h4>
+                  <p>Data Analyst</p>
+                </div>
+              </div>
+            </div>
+            <div className="testimonial-card">
+              <div className="testimonial-content">
+                <p>"The practical projects helped me build a portfolio that landed me a new job. Highly recommended!"</p>
+              </div>
+              <div className="testimonial-author">
+                <div className="author-avatar">MJ</div>
+                <div className="author-info">
+                  <h4>Arjun verma</h4>
+                  <p>UX Designer</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="cta-section">
+        <div className="container">
+          <div className="cta-content">
+            <h2>Start Your Learning Journey Today</h2>
+            <p>Join thousands of students advancing their careers with our courses</p>
+            <div className="cta-actions">
+              <Link to="/Register" className="btn btn-primary">Sign Up Free</Link>
+              <Link to="/courses" className="btn btn-secondary">Explore Courses</Link>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

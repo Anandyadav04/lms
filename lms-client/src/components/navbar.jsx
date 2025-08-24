@@ -42,7 +42,7 @@ export default function Navbar() {
         <div className="desktop-links" style={{ display: menuOpen ? 'block' : 'flex', gap: '10px' }}>
           <Link to="/courses" style={{ color: 'inherit', textDecoration: 'none' }}>Courses</Link>
           <Link to="/about" style={{ color: 'inherit', textDecoration: 'none' }}>About</Link>
-          <Link to="/contact" style={{ color: 'inherit', textDecoration: 'none' }}>Contact</Link>
+          <Link to="/Contact" style={{ color: 'inherit', textDecoration: 'none' }}>Contact</Link>
         </div>
       </div>
 

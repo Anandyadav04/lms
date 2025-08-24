@@ -9,6 +9,7 @@ import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
 import AdminPanel from './pages/AdminPanel'
 import Profile from './pages/Profile'
+import Contact from './pages/Contact' // Add this import
 import ProtectedRoute from './components/ProtectedRoute'
 import Footer from './components/Footer'
 
@@ -23,6 +24,7 @@ export default function App() {
           <Route path="/courses/:id" element={<CourseDetail />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/contact" element={<Contact />} /> {/* Add this route */}
 
           <Route
             path="/dashboard"
