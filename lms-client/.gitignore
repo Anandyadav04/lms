@@ -26,3 +26,4 @@ dist-ssr
 # manual
 .env
 node_modules
+videos

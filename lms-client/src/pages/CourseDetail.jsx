@@ -434,16 +434,17 @@ export default function CourseDetail() {
                     marginBottom: '24px'
                   }}>
                     <video 
-                      controls 
-                      style={{ 
-                        width: '100%', 
-                        borderRadius: '8px',
-                        background: '#000'
-                      }}
-                    >
-                      <source src={course.lessons[currentLesson]?.videoUrl} type="video/mp4" />
-                      Your browser does not support the video tag.
-                    </video>
+                    key={course.lessons[currentLesson]?.id}  // Add key here for React to differentiate videos
+                    controls 
+                    style={{ 
+                      width: '100%', 
+                      borderRadius: '8px',
+                      background: '#000'
+                    }}
+                  >
+                    <source src={course.lessons[currentLesson]?.videoUrl} type="video/mp4" />
+                    Your browser does not support the video tag.
+                  </video>
                   </div>
                   
                   <div style={{

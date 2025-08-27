@@ -9,8 +9,8 @@ export const sampleCourses = [
     level: 'Beginner',
     category: 'Web Development',
     lessons: [
-      { id: 'l1', title: 'Intro to React', videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4' },
-      { id: 'l2', title: 'Components & Props', videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4' }
+      { id: 'l1', title: 'Intro to React', videoUrl: '/videos/videoplayback.mp4' }, // correct path if inside public/videos
+      { id: 'l2', title: 'Components & Props', videoUrl: '/videos/props.mp4' }
     ]
   },
   {
