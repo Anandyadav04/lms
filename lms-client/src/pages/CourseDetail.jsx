@@ -13,6 +13,7 @@ export default function CourseDetail() {
   const [imgError, setImgError] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
   const [currentLesson, setCurrentLesson] = useState(0);
+  const [transcriptActive, setTranscriptActive] = useState(false);
 
   if (!course) {
     return (
@@ -63,6 +64,7 @@ export default function CourseDetail() {
   function handleLessonSelect(index) {
     if (isEnrolled) {
       setCurrentLesson(index);
+      setTranscriptActive(false); // Reset transcript when changing lessons
     }
   }
 
@@ -70,6 +72,10 @@ export default function CourseDetail() {
     // In a real app, you would update progress in the backend
     alert('Lesson marked as complete! Progress would be saved in a real application.');
   }
+
+  // Get transcript for current lesson directly from course data
+  const currentTranscript = course.lessons?.[currentLesson]?.transcript || 
+    `Transcript for "${course.lessons?.[currentLesson]?.title}" is not available yet.`;
 
   return (
     <div style={{ 
@@ -404,6 +410,14 @@ export default function CourseDetail() {
                         }}>
                           {lesson.title}
                         </div>
+                        {lesson.transcript && (
+                          <div style={{
+                            fontSize: '0.7rem',
+                            color: '#718096',
+                            marginTop: '4px'
+                          }}>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -414,53 +428,118 @@ export default function CourseDetail() {
             {/* Lesson Content */}
             <div style={{ 
               flex: 1,
-              background: 'white',
-              borderRadius: '12px',
-              padding: '24px',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '24px'
             }}>
-              {isEnrolled ? (
-                <>
-                  <h2 style={{ 
-                    fontSize: '24px', 
-                    fontWeight: '600', 
-                    color: '#2d3748',
-                    marginBottom: '16px'
-                  }}>
-                    {course.lessons[currentLesson]?.title}
-                  </h2>
-                  
-                  <div style={{
-                    marginBottom: '24px'
-                  }}>
-                    <video 
-                    key={course.lessons[currentLesson]?.id}  // Add key here for React to differentiate videos
-                    controls 
-                    style={{ 
-                      width: '100%', 
-                      borderRadius: '8px',
-                      background: '#000'
-                    }}
-                  >
-                    <source src={course.lessons[currentLesson]?.videoUrl} type="video/mp4" />
-                    Your browser does not support the video tag.
-                  </video>
-                  </div>
-                  
-                  <div style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center'
-                  }}>
-                    <div style={{ fontSize: '0.9rem', color: '#718096' }}>
-                      Lesson {currentLesson + 1} of {course.lessons.length}
+              {/* Video Player */}
+              <div style={{ 
+                background: 'white',
+                borderRadius: '12px',
+                padding: '24px',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+              }}>
+                {isEnrolled ? (
+                  <>
+                    <h2 style={{ 
+                      fontSize: '24px', 
+                      fontWeight: '600', 
+                      color: '#2d3748',
+                      marginBottom: '16px'
+                    }}>
+                      {course.lessons[currentLesson]?.title}
+                    </h2>
+                    
+                    <div style={{
+                      marginBottom: '24px'
+                    }}>
+                      <video 
+                        key={course.lessons[currentLesson]?.id}
+                        controls 
+                        style={{ 
+                          width: '100%', 
+                          borderRadius: '8px',
+                          background: '#000'
+                        }}
+                      >
+                        <source src={course.lessons[currentLesson]?.videoUrl} type="video/mp4" />
+                        Your browser does not support the video tag.
+                      </video>
                     </div>
                     
+                    <div style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      gap: '12px',
+                      flexWrap: 'wrap'
+                    }}>
+                      <div style={{ fontSize: '0.9rem', color: '#718096' }}>
+                        Lesson {currentLesson + 1} of {course.lessons.length}
+                      </div>
+                      
+                      <div style={{
+                        display: 'flex',
+                        gap: '12px'
+                      }}>
+                        {course.lessons[currentLesson]?.transcript && (
+                          <button 
+                            onClick={() => setTranscriptActive(!transcriptActive)}
+                            style={{
+                              padding: '8px 16px',
+                              background: transcriptActive ? '#667eea' : '#e2e8f0',
+                              color: transcriptActive ? 'white' : '#2d3748',
+                              border: 'none',
+                              borderRadius: '6px',
+                              fontWeight: '500',
+                              cursor: 'pointer'
+                            }}
+                          >
+                            {transcriptActive ? 'Hide Transcript' : 'Show Transcript'}
+                          </button>
+                        )}
+                        
+                        <button 
+                          onClick={markLessonComplete}
+                          style={{
+                            padding: '8px 16px',
+                            background: '#48bb78',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '6px',
+                            fontWeight: '500',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          Mark as Complete
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <div style={{ 
+                    textAlign: 'center',
+                    padding: '40px 20px'
+                  }}>
+                    <h3 style={{ 
+                      fontSize: '20px', 
+                      fontWeight: '600', 
+                      color: '#2d3748',
+                      marginBottom: '12px'
+                    }}>
+                      Enroll to access lessons
+                    </h3>
+                    <p style={{ 
+                      color: '#718096',
+                      marginBottom: '24px'
+                    }}>
+                      You need to enroll in this course to view the lessons.
+                    </p>
                     <button 
-                      onClick={markLessonComplete}
+                      onClick={handleEnroll}
                       style={{
-                        padding: '8px 16px',
-                        background: '#48bb78',
+                        padding: '10px 20px',
+                        background: 'linear-gradient(90deg, #667eea 0%, #764ba2 100%)',
                         color: 'white',
                         border: 'none',
                         borderRadius: '6px',
@@ -468,43 +547,55 @@ export default function CourseDetail() {
                         cursor: 'pointer'
                       }}
                     >
-                      Mark as Complete
+                      Enroll Now
                     </button>
                   </div>
-                </>
-              ) : (
+                )}
+              </div>
+
+              {/* Transcript Section */}
+              {isEnrolled && transcriptActive && course.lessons[currentLesson]?.transcript && (
                 <div style={{ 
-                  textAlign: 'center',
-                  padding: '40px 20px'
+                  background: 'white',
+                  borderRadius: '12px',
+                  padding: '24px',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
                 }}>
                   <h3 style={{ 
                     fontSize: '20px', 
                     fontWeight: '600', 
                     color: '#2d3748',
-                    marginBottom: '12px'
+                    marginBottom: '16px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px'
                   }}>
-                    Enroll to access lessons
+                    <span>📝</span> Lesson Transcript
                   </h3>
-                  <p style={{ 
-                    color: '#718096',
-                    marginBottom: '24px'
+                  
+                  <div style={{
+                    background: '#f7fafc',
+                    borderRadius: '8px',
+                    padding: '20px',
+                    maxHeight: '400px',
+                    overflowY: 'auto',
+                    lineHeight: '1.6',
+                    color: '#2d3748',
+                    whiteSpace: 'pre-line',
+                    fontFamily: "'Fira Code', 'Monaco', 'Consolas', monospace",
+                    fontSize: '0.95rem'
                   }}>
-                    You need to enroll in this course to view the lessons.
-                  </p>
-                  <button 
-                    onClick={handleEnroll}
-                    style={{
-                      padding: '10px 20px',
-                      background: 'linear-gradient(90deg, #667eea 0%, #764ba2 100%)',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '6px',
-                      fontWeight: '500',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    Enroll Now
-                  </button>
+                    {currentTranscript}
+                  </div>
+                  
+                  <div style={{
+                    marginTop: '16px',
+                    fontSize: '0.9rem',
+                    color: '#718096',
+                    textAlign: 'center'
+                  }}>
+                    Transcript for "{course.lessons[currentLesson]?.title}"
+                  </div>
                 </div>
               )}
             </div>

@@ -6,6 +6,7 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const auth = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -14,12 +15,43 @@ export default function Login() {
 
   async function handleSubmit(e) {
     e.preventDefault();
+    
+    // Basic validation
+    if (!email || !password) {
+      setError('Please enter both email and password');
+      return;
+    }
+    
     setLoading(true);
-    const res = await auth.login({ email, password });
-    setLoading(false);
-    if (res.ok) navigate(from, { replace: true });
-    else alert(res.message || 'Login failed');
+    setError('');
+    
+    console.log("Attempting login with:", email, password);
+    
+    try {
+      const result = await auth.login({ email, password });
+      console.log("Login result:", result);
+      
+      if (result.ok) {
+        console.log("Login successful, navigating to:", from);
+        navigate(from, { replace: true });
+      } else {
+        setError(result.message || 'Login failed');
+      }
+    } catch (err) {
+      console.error("Login error:", err);
+      setError('An unexpected error occurred');
+    } finally {
+      setLoading(false);
+    }
   }
+
+  // Test function to check auth state
+  const checkAuthState = () => {
+    console.log("Current auth state:", auth.user);
+    console.log("All users:", auth.users);
+    console.log("LocalStorage user:", localStorage.getItem('lms_user'));
+    console.log("LocalStorage users:", localStorage.getItem('lms_users'));
+  };
 
   return (
     <div style={{
@@ -30,7 +62,8 @@ export default function Login() {
       {/* Left side image */}
       <div style={{
         flex: 1,
-        background: 'url(https://source.unsplash.com/800x800/?education,books) center/cover no-repeat'
+        background: 'url(https://source.unsplash.com/800x800/?education,books) center/cover no-repeat',
+        display: window.innerWidth > 768 ? 'block' : 'none'
       }}></div>
 
       {/* Right side login form */}
@@ -47,8 +80,27 @@ export default function Login() {
           boxShadow: '0 8px 20px rgba(0,0,0,0.1)',
           width: '100%',
           maxWidth: '500px',
-          padding: '40px'
+          padding: '40px',
+          position: 'relative'
         }}>
+          {/* Debug button - remove in production */}
+          <button 
+            onClick={checkAuthState}
+            style={{
+              position: 'absolute',
+              top: '10px',
+              right: '10px',
+              background: '#eee',
+              border: 'none',
+              borderRadius: '4px',
+              padding: '5px 10px',
+              fontSize: '12px',
+              cursor: 'pointer'
+            }}
+          >
+            Debug Auth
+          </button>
+          
           <h2 style={{
             marginBottom: '1.5rem',
             fontSize: '2rem',
@@ -57,11 +109,27 @@ export default function Login() {
           }}>
             Login to LMS
           </h2>
+          
+          {error && (
+            <div style={{
+              color: '#e74c3c',
+              backgroundColor: '#fadbd8',
+              padding: '10px',
+              borderRadius: '6px',
+              marginBottom: '1rem',
+              textAlign: 'center'
+            }}>
+              {error}
+            </div>
+          )}
+          
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <input
+              type="email"
               placeholder="Email"
               value={email}
               onChange={e => setEmail(e.target.value)}
+              required
               style={{
                 padding: '12px 15px',
                 borderRadius: '8px',
@@ -74,6 +142,7 @@ export default function Login() {
               placeholder="Password"
               value={password}
               onChange={e => setPassword(e.target.value)}
+              required
               style={{
                 padding: '12px 15px',
                 borderRadius: '8px',
@@ -91,20 +160,25 @@ export default function Login() {
                 borderRadius: '8px',
                 border: 'none',
                 fontSize: '1rem',
-                cursor: loading ? 'not-allowed' : 'pointer'
+                cursor: loading ? 'not-allowed' : 'pointer',
+                opacity: loading ? 0.7 : 1
               }}
             >
               {loading ? 'Logging in...' : 'Login'}
             </button>
           </form>
-          <p style={{
-            marginTop: '1rem',
-            fontSize: '0.9rem',
-            textAlign: 'center',
-            color: '#777'
+          
+          <div style={{
+            marginTop: '1.5rem',
+            padding: '15px',
+            backgroundColor: '#f8f9fa',
+            borderRadius: '8px',
+            fontSize: '0.9rem'
           }}>
-            Tip: <strong>admin@lms.com / admin</strong> or any email / <strong>student</strong>
-          </p>
+            <p style={{ margin: '0 0 10px 0', fontWeight: 'bold' }}>Test Accounts:</p>
+            <p style={{ margin: '5px 0' }}>Admin: <strong>admin@lms.com</strong> / <strong>admin</strong></p>
+            <p style={{ margin: '5px 0' }}>Student: <strong>any email</strong> / <strong>student</strong></p>
+          </div>
         </div>
       </div>
     </div>

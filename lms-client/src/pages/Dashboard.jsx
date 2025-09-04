@@ -1,11 +1,11 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { useCourses } from '../context/CoursesContext'
 import CourseCard from '../components/CourseCard'
-import '../styles/Dashboard.css' // We'll create this CSS file
+import '../styles/Dashboard.css'
 
 export default function Dashboard(){
-  const { user } = useAuth()
+  const { user, users } = useAuth()
   const { courses } = useCourses()
 
   const enrolled = courses.filter(c => user?.enrolledCourseIds?.includes(c.id))
@@ -13,8 +13,136 @@ export default function Dashboard(){
   const inProgressCourses = enrolled.filter(c => c.progress > 0 && c.progress < 100)
   const notStartedCourses = enrolled.filter(c => !c.progress || c.progress === 0)
 
+  // Get all students (non-admin users)
+  const students = users.filter(u => u.role !== 'admin')
+
+  // Admin dashboard view
+  if (user?.role === 'admin') {
+    return (
+      <div className="dashboard-container">
+        <header className="dashboard-header">
+          <h1>Admin Dashboard</h1>
+          <div className="user-info">
+            <span>Hello,  {user?.name}</span>
+            <div className="user-avatar admin">
+              {user?.name?.charAt(0).toUpperCase()}
+            </div>
+          </div>
+        </header>
+
+        <div className="dashboard-content">
+          {/* Admin Stats Overview */}
+          <div className="admin-stats-grid">
+            <div className="stat-card">
+              <div className="stat-icon">👥</div>
+              <div className="stat-content">
+                <h3>{students.length}</h3>
+                <p>Total Students</p>
+              </div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-icon">📚</div>
+              <div className="stat-content">
+                <h3>{courses.length}</h3>
+                <p>Total Courses</p>
+              </div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-icon">✅</div>
+              <div className="stat-content">
+                <h3>{students.reduce((acc, student) => acc + (student.completedCourses || 0), 0)}</h3>
+                <p>Courses Completed</p>
+              </div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-icon">📈</div>
+              <div className="stat-content">
+                <h3>{students.length > 0 
+                  ? Math.round(students.reduce((acc, student) => acc + (student.progress || 0), 0) / students.length)
+                  : 0}%</h3>
+                <p>Average Progress</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Students Table */}
+          <section className="admin-section">
+            <h2>Student Reports</h2>
+            <div className="students-table-container">
+              <table className="students-table">
+                <thead>
+                  <tr>
+                    <th>Student Name</th>
+                    <th>Email</th>
+                    <th>Enrolled Courses</th>
+                    <th>Progress</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {students.map(student => (
+                    <tr key={student.id}>
+                      <td>{student.name}</td>
+                      <td>{student.email}</td>
+                      <td>{student.enrolledCourseIds?.length || 0}</td>
+                      <td>
+                        <div className="progress-bar">
+                          <div 
+                            className="progress-fill" 
+                            style={{width: `${student.progress || 0}%`}}
+                          ></div>
+                        </div>
+                        <span className="progress-text">{student.progress || 0}%</span>
+                      </td>
+                      <td>
+                        <button className="action-button view">View Details</button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          {/* Course Analytics */}
+          <section className="admin-section">
+            <h2>Course Analytics</h2>
+            <div className="courses-analytics">
+              {courses.map(course => {
+                const enrolledStudents = users.filter(u => 
+                  u.enrolledCourseIds?.includes(course.id)
+                ).length;
+                
+                return (
+                  <div key={course.id} className="analytics-card">
+                    <h4>{course.title}</h4>
+                    <div className="analytics-stats">
+                      <div className="stat">
+                        <span className="number">{enrolledStudents}</span>
+                        <span className="label">Enrollments</span>
+                      </div>
+                      <div className="stat">
+                        <span className="number">{Math.floor(Math.random() * 100)}%</span>
+                        <span className="label">Completion Rate</span>
+                      </div>
+                      <div className="stat">
+                        <span className="number">{course.rating || 'N/A'}</span>
+                        <span className="label">Rating</span>
+                      </div>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </section>
+        </div>
+      </div>
+    )
+  }
+
+  // Regular user dashboard
   return (
-    <div className="dashboard-container">
+<div className="dashboard-container">
       <header className="dashboard-header">
         <h1>Dashboard</h1>
         <div className="user-info">
@@ -104,4 +232,5 @@ export default function Dashboard(){
       </div>
     </div>
   )
-};
+
+}
